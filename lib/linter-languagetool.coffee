@@ -11,6 +11,10 @@ module.exports = LinterLanguagetool =
       type: 'string'
       default: 'https://languagetool.org/api/'
       order: 1
+    fallbackServer:
+      type: 'boolean'
+      description: 'If the local server is offline the linter will use the public Languagetool server (online).'
+      default: true
     configFilePath:
       title: 'Path to a config file'
       description: 'Path to a configuration file for the LanguageTool server. Can be used to provide the path to the n-gram data to LanugageTool. If given, LanguageTool can detect errors with words that are often confused, like *their* and *there*. See [LanguageTool Wiki](http://wiki.languagetool.org/finding-errors-using-n-gram-data) for more information'
@@ -53,28 +57,28 @@ module.exports = LinterLanguagetool =
       type: 'boolean'
       description: 'If enabled the linter will run on every change on the file.'
       default: false
-      
+
   activate: ->
     @subscriptions = new CompositeDisposable()
     lthelper = require './ltserver-helper'
     lthelper.init()
     LTInfoView = require './lt-status-view'
     @ltInfo = new LTInfoView()
-    
-  
+
+
   deactivate: ->
     lthelper = require './ltserver-helper'
     lthelper?.destroy()
-    
+
     @ltInfo?.destroy()
     @ltInfo = null
-    
+
     @statusBarTile?.destroy()
     @statusBarTile = null
-    
+
     @subscriptions?.dispose()
     @subscriptions = null
-    
+
   consumeStatusBar: (statusBar) ->
     @statusBarTile = statusBar.addRightTile(item: @ltInfo.element, priority: 400)
 
